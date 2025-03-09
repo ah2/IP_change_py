@@ -60,7 +60,7 @@ def main():
     # Display all previous IPs on startup
     display_previous_ips()
     
-    print(f"started checking for ip change every{WAIT_SECONDS}\n.")
+    print(f"started checking for ip change every{WAIT_SECONDS} seconds\n.")
 
     try:
         while True:
@@ -77,8 +77,7 @@ def main():
                 # Log the IP only if it has changed
                 if not last_logged_ip or current_ip != last_logged_ip:
                     log_ip_change(current_ip)
-                else:
-                    print("No IP change detected.")
+
             else:
                 print("Failed to fetch IP.")
 
