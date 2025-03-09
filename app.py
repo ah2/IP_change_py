@@ -60,7 +60,7 @@ def main():
     # Display all previous IPs on startup
     display_previous_ips()
     
-    print(f"started checking for ip change every{WAIT_SECONDS} seconds\n.")
+    print(f"started checking for ip change every {WAIT_SECONDS} seconds\n.")
 
     try:
         while True:
