@@ -4,21 +4,37 @@ import time
 from datetime import datetime
 from urllib.request import urlopen
 import json
+import socket
+
 
 # File to store IP logs
 LOG_FILE = "ip_log.txt"
 WAIT_SECONDS = 60
 
-def get_public_ip():
-    """Fetch the public IP address using an external API."""
+def get_public_ip_old():
+    """Fetch the IP address from the local TCP service."""
     try:
-        with urlopen("https://api.ipify.org?format=json") as response:
-            data = response.read().decode("utf-8")
-            return json.loads(data)["ip"]
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+            client_socket.connect((LOCAL_SERVICE_HOST, LOCAL_SERVICE_PORT))
+            # Receive the IP address from the server
+            ip = client_socket.recv(1024).decode("utf-8")
+            return ip
     except Exception as e:
-        print(f"Error fetching IP: {e}")
+        print(f"Error fetching IP from local service: {e}")
         return None
 
+def get_public_ip():
+    try:
+        hostname = "myip.opendns.com"
+        resolver = "resolver1.opendns.com"
+        
+        # Perform a DNS query to get the public IP
+        ip = socket.gethostbyname_ex(resolver)[2][0]
+        return ip
+    except Exception as e:
+        return f"Error: {e}"
+    
+    
 def log_ip_change(ip):
     """Log the IP address and timestamp to the file."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -60,7 +76,7 @@ def main():
     # Display all previous IPs on startup
     display_previous_ips()
     
-    print(f"started checking for ip change every {WAIT_SECONDS} seconds\n.")
+    print(f"\nstarted checking for ip change every {WAIT_SECONDS} seconds.\n")
 
     try:
         while True:
